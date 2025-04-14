@@ -2,7 +2,7 @@
 
 import type React from "react"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -38,18 +38,19 @@ export function ShareFormDialog({ formId, formTitle }: ShareFormDialogProps) {
     expiresAt: "",
   })
 
-  const shareUrl = `${window.location.origin}/forms/${formId}/view`
+  const [shareUrl, setShareUrl] = useState('')
+
+  // Use useEffect to access window only on the client side
+  useEffect(() => {
+    setShareUrl(`${window.location.origin}/forms/${formId}/view`)
+  }, [formId])
 
   const handleCopyLink = () => {
-    navigator.clipboard.writeText(shareUrl)
-    setCopied(true)
-
-    toast({
-      title: "Link copied",
-      description: "Share link has been copied to clipboard",
-    })
-
-    setTimeout(() => setCopied(false), 2000)
+    if (shareUrl) {
+      navigator.clipboard.writeText(shareUrl)
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
+    }
   }
 
   const handleSendEmail = (e: React.FormEvent) => {

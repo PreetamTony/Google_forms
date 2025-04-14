@@ -1,8 +1,8 @@
 'use client';
 
-import { useState, useEffect } from 'react';
 import { useAuth } from '@/components/firebase-provider';
 import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
 
 type Question = {
   id: string;
@@ -26,8 +26,8 @@ type Response = {
   submittedAt: string;
 };
 
-export default function FormResponsesPage({ params }: { params: { id: string } }) {
-  const formId = params.id;
+export default async function FormResponsesPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id: formId } = await params;
   const { user, loading: authLoading } = useAuth();
   const router = useRouter();
   const [form, setForm] = useState<Form | null>(null);

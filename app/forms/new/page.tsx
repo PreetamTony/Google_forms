@@ -1,25 +1,25 @@
 "use client"
 
-import { useState, useEffect, useRef } from "react"
-import { useRouter, useSearchParams } from "next/navigation"
-import { v4 as uuidv4 } from "uuid"
+import { BannerImageUpload } from "@/components/form-builder/banner-image-upload"
+import { FormSettings } from "@/components/form-builder/form-settings"
+import { getTemplateById } from "@/components/form-builder/form-templates"
+import { getThemeStyles } from "@/components/form-builder/form-themes"
+import { QuestionCard } from "@/components/form-builder/question-card"
+import { ShareFormDialog } from "@/components/form-builder/share-form-dialog"
 import { Button } from "@/components/ui/button"
+import { Card, CardContent } from "@/components/ui/card"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
-import { Card, CardContent } from "@/components/ui/card"
-import { PlusCircle, Save, SettingsIcon, Eye, ChevronDown } from "lucide-react"
-import { toast } from "@/components/ui/use-toast"
 import { Toaster } from "@/components/ui/toaster"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
-import { QuestionCard } from "@/components/form-builder/question-card"
-import { FormSettings } from "@/components/form-builder/form-settings"
-import { getThemeStyles } from "@/components/form-builder/form-themes"
-import { getTemplateById } from "@/components/form-builder/form-templates"
-import { BannerImageUpload } from "@/components/form-builder/banner-image-upload"
-import { ShareFormDialog } from "@/components/form-builder/share-form-dialog"
-import type { Form, Question } from "@/lib/types"
-import { saveForm, duplicateQuestion, moveQuestion } from "@/lib/store"
+import { toast } from "@/components/ui/use-toast"
 import { getCurrentUser } from "@/lib/auth"
+import { duplicateQuestion, moveQuestion, saveForm } from "@/lib/store"
+import type { Form, Question, QuestionType } from "@/lib/types"
+import { ChevronDown, Eye, PlusCircle, Save, SettingsIcon } from "lucide-react"
+import { useRouter, useSearchParams } from "next/navigation"
+import { useEffect, useRef, useState } from "react"
+import { v4 as uuidv4 } from "uuid"
 
 export default function NewFormPage() {
   const router = useRouter()
@@ -52,9 +52,12 @@ export default function NewFormPage() {
           ...prev,
           title: template.name,
           description: template.description,
-          questions: template.questions.map((q) => ({
-            ...q,
-            id: uuidv4(),
+          questions: template.questions.map((question) => ({
+            ...question,
+            type: question.type as QuestionType,
+            required: question.required ?? false, // Ensure required is always boolean
+            id: question.id ?? uuidv4(), // Ensure id exists
+            title: question.title ?? "", // Ensure title exists
           })),
         }))
       }
@@ -266,7 +269,7 @@ export default function NewFormPage() {
                 onDragOver={() => handleDragOver(index)}
               >
                 <QuestionCard
-                  question={question}
+                  question={question} // Ensure only one 'question' attribute is present
                   index={index}
                   updateQuestion={updateQuestion}
                   removeQuestion={removeQuestion}
@@ -274,7 +277,6 @@ export default function NewFormPage() {
                   isActive={activeQuestionId === question.id}
                   onActivate={() => setActiveQuestionId(question.id)}
                   onDragStart={() => handleDragStart(index)}
-                  allQuestions={form.questions}
                 />
               </div>
             ))}

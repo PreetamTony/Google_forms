@@ -1,14 +1,14 @@
-import { NextResponse } from 'next/server';
 import { getCollection } from '@/lib/mongodb';
 import { ObjectId } from 'mongodb';
+import { NextResponse } from 'next/server';
 
 // Get a specific form by ID
 export async function GET(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const formId = params.id;
+    const { id: formId } = await params;
     const formsCollection = await getCollection('forms');
     
     const form = await formsCollection.findOne({ _id: new ObjectId(formId) });
@@ -33,10 +33,10 @@ export async function GET(
 // Update a form
 export async function PUT(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const formId = params.id;
+    const { id: formId } = await params;
     const formsCollection = await getCollection('forms');
     const data = await request.json();
     
@@ -71,10 +71,10 @@ export async function PUT(
 // Delete a form
 export async function DELETE(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const formId = params.id;
+    const { id: formId } = await params;
     const formsCollection = await getCollection('forms');
     
     const result = await formsCollection.deleteOne({ _id: new ObjectId(formId) });

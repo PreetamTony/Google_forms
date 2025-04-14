@@ -1,7 +1,7 @@
 'use client';
 
-import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
 
 type Question = {
   id: string;
@@ -18,8 +18,8 @@ type Form = {
   questions: Question[];
 };
 
-export default function ViewFormPage({ params }: { params: { id: string } }) {
-  const formId = params.id;
+export default async function ViewFormPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id: formId } = await params;
   const router = useRouter();
   const [form, setForm] = useState<Form | null>(null);
   const [loading, setLoading] = useState(true);

@@ -1,13 +1,14 @@
-import { NextResponse } from 'next/server';
 import { getCollection } from '@/lib/mongodb';
 import { ObjectId } from 'mongodb';
+import { NextResponse } from 'next/server';
 
+// Updated route handler with correct parameter types for Next.js 15
 export async function GET(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const formId = params.id;
+    const { id: formId } = await params;
     const responsesCollection = await getCollection('responses');
     
     // Try to match both string formId and ObjectId formId
